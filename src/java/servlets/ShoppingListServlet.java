@@ -39,25 +39,23 @@ public class ShoppingListServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession s = request.getSession();
         ArrayList<String> list = (ArrayList<String>) s.getAttribute("list");
+        String action = request.getParameter("action");
 
-        if (request.getParameter("action").equals("register")) {
-            s.setAttribute("user", request.getParameter("username"));
-            getServletContext().getRequestDispatcher("/WEB-INF/shoppinglist.jsp").forward(request, response);
-        } else if (request.getParameter("action").equals("logout")) {
-            s.setAttribute("user", null);
-            list.clear();
-            getServletContext().getRequestDispatcher("/WEB-INF/register.jsp").forward(request, response);
-        } else if (request.getParameter("action").equals("add") && request.getParameter("item") != null && !request.getParameter("item").equals("")) {
-            if (list == null) {
-                list = new ArrayList<String>();
+        if (action != null) {
+            if (action.equals("register")) {
+                s.setAttribute("user", request.getParameter("username"));
+                getServletContext().getRequestDispatcher("/WEB-INF/shoppinglist.jsp").forward(request, response);
+            } else if (action.equals("add") && request.getParameter("item") != null && !request.getParameter("item").equals("")) {
+                if (list == null) {
+                    list = new ArrayList<String>();
+                    s.setAttribute("list", list);
+                }
+                list.add(request.getParameter("item"));
+                getServletContext().getRequestDispatcher("/WEB-INF/shoppinglist.jsp").forward(request, response);
+            } else if (action.equals("delete") && list.contains(request.getParameter("item"))) {
+                list.remove(request.getParameter("item"));
+                getServletContext().getRequestDispatcher("/WEB-INF/shoppinglist.jsp").forward(request, response);
             }
-            list.add(request.getParameter("item"));
-            s.setAttribute("list", list);
-            getServletContext().getRequestDispatcher("/WEB-INF/shoppinglist.jsp").forward(request, response);
-        } else if (request.getParameter("action").equals("delete") && list.contains(request.getParameter("item"))) {
-            list.remove(request.getParameter("item"));
-            s.setAttribute("list", list);
-            getServletContext().getRequestDispatcher("/WEB-INF/shoppinglist.jsp").forward(request, response);
         }
     }
 }
